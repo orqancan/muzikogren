@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gam Atölyesi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Music&display=swap">
+<style>
+/* Layout: üst bantta sekmeler; kopya kâğıdında çember + detay iki sütun, altta tablolar; egzersizde ayarlar + soru sahnesi */
+:root {
+  --bg: #F2F3F6;
+  --surface: #FFFFFF;
+  --surface-2: #E8EAF0;
+  --ink: #15171C;
+  --muted: #5B6170;
+  --line: #D6D9E1;
+  --major: #F2B705;       /* majör = altın */
+  --major-ink: #7A5200;
+  --major-soft: #FDF1C8;
+  --minor: #4F46E5;       /* minör = çivit */
+  --minor-ink: #3730A3;
+  --minor-soft: #E3E1FF;
+  --good: #1E8E4E;
+  --good-soft: #D8F3E2;
+  --bad: #C9353B;
+  --bad-soft: #FADADB;
+  --ivory: #FFFFFF;
+  --ebony: #1B1D23;
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-music: "Noto Music", "Bravura Text", "Segoe UI Symbol", serif;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1116; --surface: #181B22; --surface-2: #232733; --ink: #E9EBF1; --muted: #9AA0AE; --line: #2E3340;
+    --major: #F5C542; --major-ink: #F5C542; --major-soft: #3A2F0E;
+    --minor: #8B87FF; --minor-ink: #B1AEFF; --minor-soft: #25234D;
+    --good: #4CC981; --good-soft: #143322; --bad: #FF6B70; --bad-soft: #3C1A1C;
+    --ivory: #E9EAEE; --ebony: #0B0C10;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1116; --surface: #181B22; --surface-2: #232733; --ink: #E9EBF1; --muted: #9AA0AE; --line: #2E3340;
+  --major: #F5C542; --major-ink: #F5C542; --major-soft: #3A2F0E;
+  --minor: #8B87FF; --minor-ink: #B1AEFF; --minor-soft: #25234D;
+  --good: #4CC981; --good-soft: #143322; --bad: #FF6B70; --bad-soft: #3C1A1C;
+  --ivory: #E9EAEE; --ebony: #0B0C10;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.55 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--minor); outline-offset: 2px; border-radius: 6px; }
+.music { font-family: var(--font-music); }
+.mono { font-family: var(--font-mono); }
+.muted { color: var(--muted); }
+.label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--muted); }
+
+/* Başlık */
+.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; padding-block: 28px 18px; }
+.brand h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 800; letter-spacing: -.02em; }
+.brand h1 .dot-maj { color: var(--major-ink); }
+.brand h1 .dot-min { color: var(--minor-ink); }
+.brand p { margin: 4px 0 0; color: var(--muted); }
+.top-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; padding: 7px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--muted); }
+.seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / .12); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 24px; overflow-x: auto; }
+.tabs button { border: 0; background: none; padding: 12px 16px; font-weight: 700; font-size: 15px; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; min-width: 0; }
+.stack { display: grid; gap: 20px; }
+
+/* Formüller */
+.formulas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.formula { padding: 14px 16px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.formula h3 { font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.formula .steps-inline { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+.step { font-family: var(--font-mono); font-weight: 700; font-size: 13px; min-width: 26px; text-align: center; padding: 3px 6px; border-radius: 6px; background: var(--surface-2); }
+.step.h { background: var(--bad-soft); color: var(--bad); }
+.step.th { background: var(--minor-soft); color: var(--minor-ink); }
+.swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.swatch.maj { background: var(--major); }
+.swatch.min { background: var(--minor); }
+.legend { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+/* Çember + detay */
+.explorer { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .explorer { grid-template-columns: minmax(0, 1fr); } }
+.circle-box { display: grid; gap: 8px; justify-items: center; }
+.circle-box svg { width: 100%; max-width: 400px; height: auto; display: block; }
+.wedge { cursor: pointer; }
+.wedge path { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; transition: fill .15s; }
+.wedge.min path { fill: var(--surface-2); }
+.wedge:hover path { fill: var(--major-soft); }
+.wedge.min:hover path { fill: var(--minor-soft); }
+.wedge.sel path { fill: var(--major); }
+.wedge.min.sel path { fill: var(--minor); }
+.wedge text { fill: var(--ink); font-family: var(--font-display); font-weight: 700; pointer-events: none; }
+.wedge text.sig { font-family: var(--font-music); font-weight: 400; fill: var(--muted); }
+.wedge.min.sel text { fill: #FFFFFF; }
+.wedge.sel text.sig { fill: currentColor; }
+.wedge.sel:not(.min) text { fill: #1B1D23; }
+.wedge:focus { outline: none; }
+.wedge:focus-visible path { stroke: var(--ink); stroke-width: 3; }
+.circle-center { fill: var(--bg); stroke: var(--line); }
+.circle-center-text { fill: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+
+.detail-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.detail-head h2 { font-size: clamp(28px, 4vw, 38px); font-weight: 800; letter-spacing: -.015em; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .06em; }
+.chip.maj { background: var(--major-soft); color: var(--major-ink); }
+.chip.min { background: var(--minor-soft); color: var(--minor-ink); }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 9px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.primary:hover { opacity: .88; }
+.btn.small { padding: 6px 12px; font-size: 13px; }
+.linkish { border: 0; background: none; padding: 0; color: inherit; font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; }
+.linkish.maj { text-decoration-color: var(--major); }
+.linkish.min { text-decoration-color: var(--minor); }
+
+.scale-row { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; margin: 18px 0 6px; row-gap: 10px; }
+.sn { display: grid; justify-items: center; gap: 2px; min-width: 52px; }
+.sn .deg { font-size: 11px; font-weight: 700; color: var(--muted); font-family: var(--font-mono); }
+.sn .note { font-family: var(--font-display); font-weight: 800; font-size: 24px; line-height: 1.2; padding: 4px 8px; border-radius: 10px; background: var(--surface-2); min-width: 48px; text-align: center; }
+.sn.tonic .note { background: var(--accent-fill, var(--major)); color: var(--accent-on, #1B1D23); }
+.sn.changed .note { outline: 2px dashed var(--bad); outline-offset: 2px; }
+.sn .note .acc, .note-btn .acc, .opt .acc { font-family: var(--font-music); font-weight: 400; font-size: 1.2em; line-height: 1; margin-left: .03em; }
+.gap { display: grid; place-items: center; padding-top: 18px; min-width: 30px; }
+.gap .step { font-size: 11px; min-width: 22px; padding: 2px 4px; }
+@media (max-width: 520px) { .sn { min-width: 40px; } .sn .note { font-size: 19px; min-width: 38px; padding: 3px 5px; } .gap { min-width: 24px; } }
+
+.piano { position: relative; height: 130px; margin-top: 14px; user-select: none; }
+.piano .w, .piano .b { position: absolute; top: 0; border-radius: 0 0 6px 6px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 6px; font-size: 11px; font-weight: 700; transition: background .12s; }
+.piano .w { height: 100%; background: var(--ivory); border: 1px solid var(--line); }
+.piano .b { height: 62%; background: var(--ebony); z-index: 2; color: #fff; }
+.piano .on { background: var(--key-on, var(--major)); color: var(--key-on-ink, #1B1D23); }
+.piano .w.on { border-color: var(--line); }
+.piano .b.on { border: 2px solid var(--ebony); border-top: 0; }
+.piano .on.tonic { box-shadow: inset 0 -5px 0 rgb(0 0 0 / .28); }
+.piano .playing { filter: brightness(1.25) saturate(1.2); transform: translateY(2px); }
+.piano .lbl { font-family: var(--font-display); font-size: 12px; line-height: 1; white-space: nowrap; }
+.piano .b .lbl { font-size: 10px; }
+.piano .lbl .acc { font-family: var(--font-music); font-weight: 400; font-size: 1.2em; line-height: 1; margin-left: .03em; }
+.mode-minor { --accent-fill: var(--minor); --accent-on: #FFFFFF; --key-on: var(--minor); --key-on-ink: #FFFFFF; }
+
+.facts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; margin-top: 18px; }
+@media (max-width: 520px) { .facts { grid-template-columns: minmax(0, 1fr); } }
+.staff { background: var(--surface-2); border-radius: 12px; padding: 6px 8px; }
+.staff svg { display: block; width: 200px; max-width: 100%; height: auto; }
+.staff line { stroke: var(--ink); stroke-width: 1; opacity: .7; }
+.staff text { fill: var(--ink); font-family: var(--font-music); }
+.fact-list { display: grid; gap: 6px; margin: 0; }
+.fact-list > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 10px; }
+@media (max-width: 420px) { .fact-list > div { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+.fact-list dt { color: var(--muted); font-size: 13px; font-weight: 600; }
+.fact-list dd { margin: 0; font-weight: 600; }
+.variants { margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.variant-note { font-size: 13px; color: var(--muted); margin: 8px 0 0; max-width: 65ch; }
+
+/* İpuçları */
+.tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.tip { padding: 14px 16px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.tip h3 { font-size: 15px; margin-bottom: 4px; }
+.tip p { margin: 0; color: var(--muted); font-size: 14px; }
+.tip .seq { font-family: var(--font-mono); font-weight: 700; color: var(--ink); letter-spacing: .04em; }
+
+/* Tablolar */
+.tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); gap: 20px; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); white-space: nowrap; }
+td { padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--surface-2); }
+tbody tr.sel { background: var(--major-soft); }
+.t-min tbody tr.sel { background: var(--minor-soft); }
+td.key { font-family: var(--font-display); font-weight: 800; }
+td.notes { font-family: var(--font-display); font-weight: 600; letter-spacing: .02em; }
+.acc { font-family: var(--font-music); font-weight: 400; font-size: 1.2em; line-height: 1; margin-left: .03em; }
+h2.section { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+
+/* Egzersiz */
+.ex-layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .ex-layout { grid-template-columns: minmax(0, 1fr); } }
+.types { display: grid; gap: 6px; }
+.type { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 12px; cursor: pointer; display: grid; gap: 1px; }
+.type b { font-size: 14px; }
+.type span { font-size: 12.5px; color: var(--muted); }
+.type:hover { background: var(--surface-2); }
+.type[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.settings { display: grid; gap: 14px; margin-top: 16px; }
+.toggle-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-weight: 600; font-size: 14px; background: var(--surface); }
+.toggle input { accent-color: var(--ink); margin: 0; }
+input[type="range"] { width: 100%; accent-color: var(--ink); }
+.range-head { display: flex; justify-content: space-between; align-items: baseline; }
+
+.scoreboard { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px; }
+.score { background: var(--surface-2); border-radius: 10px; padding: 8px 12px; }
+.score b { display: block; font-family: var(--font-display); font-size: 24px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.score span { font-size: 12px; color: var(--muted); font-weight: 600; }
+@media (max-width: 420px) { .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.stage { min-height: 360px; }
+.q-kind { margin-bottom: 4px; }
+.q-prompt { font-family: var(--font-display); font-size: clamp(22px, 3.4vw, 30px); font-weight: 800; line-height: 1.2; margin: 0 0 16px; }
+.q-prompt .hl-maj { color: var(--major-ink); }
+.q-prompt .hl-min { color: var(--minor-ink); }
+.options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+.opt { border: 2px solid var(--line); background: var(--surface); border-radius: 12px; padding: 14px; font-family: var(--font-display); font-weight: 800; font-size: 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; text-align: left; }
+.opt:hover:not(:disabled) { border-color: var(--ink); }
+.opt .kbd { font-family: var(--font-mono); font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font-weight: 500; }
+.opt.right { border-color: var(--good); background: var(--good-soft); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt:disabled { cursor: default; }
+.feedback { margin-top: 16px; padding: 14px 16px; border-radius: 12px; display: grid; gap: 10px; }
+.feedback.ok { background: var(--good-soft); }
+.feedback.no { background: var(--bad-soft); }
+.feedback .fb-title { font-weight: 800; font-size: 16px; }
+.feedback.ok .fb-title { color: var(--good); }
+.feedback.no .fb-title { color: var(--bad); }
+.fb-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.blank .note { background: transparent; border: 2px dashed var(--muted); color: var(--muted); }
+
+.slots { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 16px; }
+.slot { width: 60px; height: 60px; border-radius: 12px; border: 2px dashed var(--line); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 22px; position: relative; background: var(--surface); }
+.slot .d { position: absolute; top: 2px; left: 6px; font-size: 10px; font-family: var(--font-mono); color: var(--muted); font-weight: 700; }
+.slot.filled { border-style: solid; border-color: var(--good); background: var(--good-soft); }
+.slot.given { border-style: solid; border-color: var(--line); background: var(--surface-2); }
+.slot.current { border-color: var(--ink); border-style: solid; }
+.slot.shake { animation: shake .35s; border-color: var(--bad); background: var(--bad-soft); }
+@keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+.palette { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.note-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 9px 0; font-family: var(--font-display); font-weight: 800; font-size: 17px; cursor: pointer; }
+.note-btn:hover:not(:disabled) { background: var(--surface-2); border-color: var(--ink); }
+.note-btn:disabled { opacity: .45; cursor: default; }
+.palette-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; grid-column: 1 / -1; margin-top: 4px; }
+.hint-line { min-height: 24px; font-size: 14px; color: var(--muted); margin-top: 10px; }
+.hint-line b { color: var(--ink); }
+
+/* İlerleme */
+.mastery { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.m-cell { border-radius: 10px; padding: 10px 12px; background: var(--surface-2); border: 1px solid transparent; display: grid; gap: 2px; }
+.m-cell b { font-family: var(--font-display); font-size: 17px; }
+.m-cell span { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.m-cell.lv1 { background: var(--bad-soft); border-color: var(--bad); }
+.m-cell.lv2 { background: var(--major-soft); border-color: var(--major); }
+.m-cell.lv3 { background: var(--good-soft); border-color: var(--good); }
+.m-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.m-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Gam Atölyesi<span class="dot-maj">.</span><span class="dot-min">.</span></h1>
+      <p>Majör ve minör gamları gör, dinle, yaz ve ezberle.</p>
+    </div>
+    <div class="top-controls">
+      <span class="label">Nota adları</span>
+      <div class="seg" role="group" aria-label="Nota adlandırma">
+        <button type="button" id="name-letter" data-naming="letter" aria-pressed="true">C D E</button>
+        <button type="button" id="name-solfej" data-naming="solfej" aria-pressed="false">Do Re Mi</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" id="tab-sheet" data-tab="sheet" aria-selected="true">Kopya kâğıdı</button>
+    <button type="button" role="tab" id="tab-ex" data-tab="ex" aria-selected="false">Egzersiz</button>
+    <button type="button" role="tab" id="tab-prog" data-tab="prog" aria-selected="false">İlerleme</button>
+  </nav>
+
+  <!-- KOPYA KÂĞIDI -->
+  <section id="view-sheet" class="stack">
+    <div class="formulas" id="formulas"></div>
+
+    <div class="explorer">
+      <div class="panel circle-box">
+        <div id="circle"></div>
+        <p class="muted" style="margin:0;font-size:13px;text-align:center">Dış halka majör, iç halka ilişkili minör. Bir tona dokun.</p>
+      </div>
+      <div class="panel" id="detail"></div>
+    </div>
+
+    <div>
+      <h2 class="section">Akılda tutma ipuçları</h2>
+      <div class="tips" id="tips"></div>
+    </div>
+
+    <div>
+      <h2 class="section">Tüm gamlar</h2>
+      <div class="tables" id="tables"></div>
+    </div>
+  </section>
+
+  <!-- EGZERSİZ -->
+  <section id="view-ex" hidden>
+    <div class="ex-layout">
+      <aside class="panel">
+        <div class="label" style="margin-bottom:8px">Egzersiz türü</div>
+        <div class="types" id="types"></div>
+        <div class="settings">
+          <div>
+            <div class="label" style="margin-bottom:6px">Gamlar</div>
+            <div class="toggle-row">
+              <label class="toggle"><input type="checkbox" id="set-major" checked> <span class="swatch maj"></span> Majör</label>
+              <label class="toggle"><input type="checkbox" id="set-minor" checked> <span class="swatch min"></span> Minör</label>
+            </div>
+          </div>
+          <div>
+            <div class="range-head"><span class="label">En fazla işaret</span><b id="max-acc-out" class="mono">3</b></div>
+            <input type="range" id="set-maxacc" min="0" max="7" value="3">
+            <div class="muted" style="font-size:12.5px" id="pool-info"></div>
+          </div>
+        </div>
+      </aside>
+      <div class="panel">
+        <div class="scoreboard">
+          <div class="score"><b id="sc-right">0</b><span>Doğru</span></div>
+          <div class="score"><b id="sc-wrong">0</b><span>Yanlış</span></div>
+          <div class="score"><b id="sc-streak">0</b><span>Seri</span></div>
+          <div class="score"><b id="sc-best">0</b><span>En iyi seri</span></div>
+        </div>
+        <div class="stage" id="stage"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- İLERLEME -->
+  <section id="view-prog" class="stack" hidden>
+    <div class="panel stack">
+      <div class="detail-head">
+        <div>
+          <h2 class="section" style="margin:0">Ton ton ustalık</h2>
+          <p class="muted" style="margin:4px 0 0">Egzersizlerdeki cevapların bu tarayıcıda saklanır. Zorlandığın tonlar sorularda daha sık çıkar.</p>
+        </div>
+        <div id="reset-area"></div>
+      </div>
+      <div class="m-legend">
+        <span><i style="background:var(--surface-2)"></i>Henüz denenmedi</span>
+        <span><i style="background:var(--bad-soft);border:1px solid var(--bad)"></i>%60 altı</span>
+        <span><i style="background:var(--major-soft);border:1px solid var(--major)"></i>%60–85</span>
+        <span><i style="background:var(--good-soft);border:1px solid var(--good)"></i>%85 üstü</span>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:8px"><span class="swatch maj"></span> Majör</div>
+        <div class="mastery" id="m-major"></div>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:8px"><span class="swatch min"></span> Minör</div>
+        <div class="mastery" id="m-minor"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- Müzik çekirdeği ---------- */
+const LET = ['C','D','E','F','G','A','B'];
+const SOL = ['Do','Re','Mi','Fa','Sol','La','Si'];
+const NAT = [0,2,4,5,7,9,11];
+const ACC = { '-2':'𝄫', '-1':'♭', '0':'', '1':'♯', '2':'𝄪' };
+const IV = {
+  major:    [0,2,4,5,7,9,11],
+  minor:    [0,2,3,5,7,8,10],
+  harmonic: [0,2,3,5,7,8,11],
+  melodic:  [0,2,3,5,7,9,11],
+};
+const SHARP_ORDER = [3,0,4,1,5,2,6]; // F C G D A E B
+const FLAT_ORDER  = [6,2,5,1,4,0,3]; // B E A D G C F
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('gam-atolyesi:' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('gam-atolyesi:' + k, JSON.stringify(v)); } catch (e) {} },
+};
+
+let naming = store.get('naming', 'letter');
+
+const parse = s => {
+  const r = s.slice(1);
+  return { l: LET.indexOf(s[0]), a: r === '#' ? 1 : r === 'b' ? -1 : r === '##' ? 2 : r === 'bb' ? -2 : 0 };
+};
+const pc = n => ((NAT[n.l] + n.a) % 12 + 12) % 12;
+const same = (x, y) => x.l === y.l && x.a === y.a;
+const str = n => LET[n.l] + (n.a === 1 ? '#' : n.a === -1 ? 'b' : n.a === 2 ? '##' : n.a === -2 ? 'bb' : '');
+const base = n => (naming === 'solfej' ? SOL : LET)[n.l];
+const nm = n => base(n) + (n.a ? `<span class="acc">${ACC[n.a]}</span>` : '');
+const nmText = n => base(n) + ACC[n.a];
+
+function build(tonic, iv) {
+  const t = NAT[tonic.l] + tonic.a;
+  return iv.map((s, i) => {
+    const l = (tonic.l + i) % 7;
+    let a = (t + s - NAT[l]) % 12;
+    a = ((a + 18) % 12) - 6;
+    return { l, a };
+  });
+}
+// Notaları tonikten başlayarak yukarı doğru mutlak yarım ses değerlerine çevirir (0 = Do)
+const absOf = (tonic, iv) => { const p0 = pc(tonic); return iv.map(s => p0 + s).concat(p0 + 12); };
+
+function sigOf(notes) {
+  const sharps = notes.filter(n => n.a > 0), flats = notes.filter(n => n.a < 0);
+  if (sharps.length) return { type: 'sharp', count: sharps.length, list: SHARP_ORDER.filter(l => sharps.some(n => n.l === l)).map(l => ({ l, a: 1 })) };
+  if (flats.length) return { type: 'flat', count: flats.length, list: FLAT_ORDER.filter(l => flats.some(n => n.l === l)).map(l => ({ l, a: -1 })) };
+  return { type: 'none', count: 0, list: [] };
+}
+const sigText = sig => sig.count === 0 ? 'İşaret yok' : `${sig.count} ${sig.type === 'sharp' ? 'diyez' : 'bemol'}`;
+const sigShort = sig => sig.count === 0 ? '0' : `${sig.count}${sig.type === 'sharp' ? '♯' : '♭'}`;
+
+const MAJ = ['C','G','D','A','E','B','F#','C#','F','Bb','Eb','Ab','Db','Gb','Cb'];
+const KEYS = [];
+const byId = {};
+MAJ.forEach(s => {
+  const tonic = parse(s);
+  const notes = build(tonic, IV.major);
+  const k = { id: s + '-major', tonic, mode: 'major', notes, sig: sigOf(notes) };
+  KEYS.push(k); byId[k.id] = k;
+});
+KEYS.slice().forEach(mj => {
+  const tonic = mj.notes[5];
+  const notes = build(tonic, IV.minor);
+  const k = { id: str(tonic) + '-minor', tonic, mode: 'minor', notes, sig: sigOf(notes) };
+  KEYS.push(k); byId[k.id] = k;
+  mj.rel = k.id; k.rel = mj.id;
+});
+KEYS.forEach(k => {
+  const p = str(k.tonic) + '-' + (k.mode === 'major' ? 'minor' : 'major');
+  k.par = byId[p] ? p : null;
+});
+const modeTr = m => m === 'major' ? 'majör' : 'minör';
+const keyName = k => `${nm(k.tonic)} ${modeTr(k.mode)}`;
+const keyNameText = k => `${nmText(k.tonic)} ${modeTr(k.mode)}`;
+const sortBySig = (a, b) => (a.sig.type === 'flat' ? 10 : 0) + a.sig.count - ((b.sig.type === 'flat' ? 10 : 0) + b.sig.count);
+
+/* ---------- Ses ---------- */
+let actx = null;
+function ac() {
+  if (!actx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; actx = new C(); }
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function tone(c, midi, t, d) {
+  const f = 440 * Math.pow(2, (midi - 69) / 12);
+  const o = c.createOscillator(), o2 = c.createOscillator(), g = c.createGain(), g2 = c.createGain(), lp = c.createBiquadFilter();
+  o.type = 'triangle'; o2.type = 'sine'; o.frequency.value = f; o2.frequency.value = f * 2; g2.gain.value = 0.18;
+  lp.type = 'lowpass'; lp.frequency.value = 2600;
+  o.connect(lp); o2.connect(g2); g2.connect(lp); lp.connect(g); g.connect(c.destination);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.32, t + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.start(t); o2.start(t); o.stop(t + d + 0.05); o2.stop(t + d + 0.05);
+}
+let playTimers = [];
+function playSeq(seq, pianoEl, gap = 0.3) {
+  const c = ac(); if (!c) return;
+  playTimers.forEach(clearTimeout); playTimers = [];
+  if (pianoEl) pianoEl.querySelectorAll('.playing').forEach(e => e.classList.remove('playing'));
+  const t0 = c.currentTime + 0.06;
+  seq.forEach((p, i) => {
+    tone(c, 60 + p, t0 + i * gap, 0.7);
+    if (pianoEl) {
+      const el = pianoEl.querySelector(`[data-p="${p}"]`);
+      if (el) {
+        playTimers.push(setTimeout(() => el.classList.add('playing'), (0.06 + i * gap) * 1000));
+        playTimers.push(setTimeout(() => el.classList.remove('playing'), (0.06 + i * gap + gap * 0.9) * 1000));
+      }
+    }
+  });
+}
+// Çıkıcı + inici. Melodik minör inerken doğal minöre döner.
+function playScale(tonic, iv, pianoEl, ivDown) {
+  const up = absOf(tonic, iv);
+  const down = absOf(tonic, ivDown || iv).slice(0, -1).reverse();
+  playSeq(up.concat(down), pianoEl);
+}
+
+/* ---------- Görsel bileşenler ---------- */
+const WHITE_PC = [0,2,4,5,7,9,11];
+function pianoHTML(abs, notes, opts = {}) {
+  const map = {};
+  abs.forEach((p, i) => { map[p] = { n: notes[i % 7], tonic: i === 0 || i === 7 }; });
+  const W = 14, w = 100 / W;
+  let whites = '', blacks = '', wi = 0;
+  for (let p = 0; p < 24; p++) {
+    const isW = WHITE_PC.includes(p % 12);
+    const m = map[p];
+    const cls = (m ? ' on' : '') + (m && m.tonic ? ' tonic' : '');
+    const lbl = m && opts.labels !== false ? `<span class="lbl">${nm(m.n)}</span>` : '';
+    if (isW) {
+      whites += `<div class="w${cls}" data-p="${p}" style="left:${wi * w}%;width:${w}%">${lbl}</div>`;
+      wi++;
+    } else {
+      const bw = w * 0.62;
+      blacks += `<div class="b${cls}" data-p="${p}" style="left:${wi * w - bw / 2}%;width:${bw}%">${lbl}</div>`;
+    }
+  }
+  return `<div class="piano" aria-hidden="true">${whites}${blacks}</div>`;
+}
+
+// Sol anahtarlı porte; adım 0 = alt çizgi (Mi4)
+const SHARP_STEP = { 3: 8, 0: 5, 4: 9, 1: 6, 5: 3, 2: 7, 6: 4 };
+const FLAT_STEP  = { 6: 4, 2: 7, 5: 3, 1: 6, 4: 2, 0: 5, 3: 1 };
+function staffSVG(sig) {
+  const top = 22, gapY = 10, bottom = top + 4 * gapY;
+  let s = `<svg viewBox="0 0 200 84" role="img" aria-label="Donanım: ${sigText(sig)}">`;
+  for (let i = 0; i < 5; i++) s += `<line x1="4" x2="196" y1="${top + i * gapY}" y2="${top + i * gapY}"/>`;
+  s += `<text x="8" y="${bottom - 10}" font-size="45">𝄞</text>`;
+  sig.list.forEach((n, i) => {
+    const step = sig.type === 'sharp' ? SHARP_STEP[n.l] : FLAT_STEP[n.l];
+    const y = bottom - step * (gapY / 2);
+    const x = 46 + i * 16;
+    s += sig.type === 'sharp'
+      ? `<text x="${x}" y="${(y + 3.4).toFixed(1)}" font-size="30">♯</text>`
+      : `<text x="${x}" y="${(y + 4.8).toFixed(1)}" font-size="30">♭</text>`;
+  });
+  return s + '</svg>';
+}
+
+function stepLabel(d) { return d === 1 ? ['Y', 'h'] : d === 2 ? ['T', ''] : ['T+Y', 'th']; }
+function scaleRowHTML(notes, iv, opts = {}) {
+  const ivs = iv.concat(12);
+  let h = '<div class="scale-row">';
+  const all = notes.concat([notes[0]]);
+  all.forEach((n, i) => {
+    const blank = opts.blank != null && opts.blank === i;
+    const changed = opts.changed && opts.changed.includes(i);
+    h += `<div class="sn${i === 0 || i === 7 ? ' tonic' : ''}${changed ? ' changed' : ''}${blank ? ' blank' : ''}"><span class="deg">${i === 7 ? '8' : i + 1}</span><span class="note">${blank ? '?' : nm(n)}</span></div>`;
+    if (i < 7 && opts.steps !== false) {
+      const [t, c] = stepLabel(ivs[i + 1] - ivs[i]);
+      h += `<div class="gap"><span class="step ${c}">${t}</span></div>`;
+    }
+  });
+  return h + '</div>';
+}
+
+/* ---------- Kopya kâğıdı ---------- */
+let selected = store.get('selected', 'C-major');
+if (!byId[selected]) selected = 'C-major';
+let variant = 'minor';
+
+function renderFormulas() {
+  const rows = [
+    ['Majör', 'maj', IV.major, 'Parlak, “mutlu” renk. Tüm majörler aynı kalıbı izler.'],
+    ['Doğal minör', 'min', IV.minor, 'Majörün 6. derecesinden başlamak gibidir.'],
+    ['Armonik minör', 'min', IV.harmonic, '7. derece yarım ses yükselir.'],
+    ['Melodik minör', 'min', IV.melodic, 'Çıkarken 6 ve 7 yükselir, inerken doğal minör.'],
+  ];
+  document.getElementById('formulas').innerHTML = rows.map(([t, c, iv, d]) => {
+    const ivs = iv.concat(12);
+    const steps = ivs.slice(1).map((v, i) => { const [s, k] = stepLabel(v - ivs[i]); return `<span class="step ${k}">${s}</span>`; }).join('');
+    return `<div class="formula"><h3><span class="swatch ${c}"></span>${t}</h3><div class="steps-inline">${steps}</div><div class="legend">${d}</div></div>`;
+  }).join('') + `<div class="formula"><h3>Kısaltmalar</h3><div class="legend" style="margin-top:6px"><b class="mono">T</b> tam ses (2 yarım ses)<br><b class="mono">Y</b> yarım ses (piyanoda komşu tuş)<br><b class="mono">T+Y</b> 3 yarım ses</div></div>`;
+}
+
+const CIRCLE_MAJ = ['C','G','D','A','E','B','F#','Db','Ab','Eb','Bb','F'];
+const CIRCLE_MAJ_ALT = { 5: 'Cb', 6: 'Gb', 7: 'C#' };
+const CIRCLE_MIN = ['A','E','B','F#','C#','G#','D#','Bb','F','C','G','D'];
+const CIRCLE_MIN_ALT = { 5: 'Ab', 6: 'Eb', 7: 'A#' };
+
+function wedgePath(r0, r1, a0, a1) {
+  const p = (r, a) => [(r * Math.cos(a * Math.PI / 180)).toFixed(2), (r * Math.sin(a * Math.PI / 180)).toFixed(2)];
+  const [x0, y0] = p(r1, a0), [x1, y1] = p(r1, a1), [x2, y2] = p(r0, a1), [x3, y3] = p(r0, a0);
+  return `M${x0} ${y0}A${r1} ${r1} 0 0 1 ${x1} ${y1}L${x2} ${y2}A${r0} ${r0} 0 0 0 ${x3} ${y3}Z`;
+}
+function renderCircle() {
+  let s = '<svg viewBox="-185 -185 370 370" role="group" aria-label="Beşliler çemberi">';
+  const ring = (list, alt, mode, r0, r1, fs) => {
+    list.forEach((t, i) => {
+      const c = -90 + i * 30, id = t + '-' + mode, altId = alt[i] ? alt[i] + '-' + mode : null;
+      const k = byId[id];
+      const sel = selected === id || selected === altId;
+      const rm = (r0 + r1) / 2, rad = c * Math.PI / 180;
+      const x = (rm * Math.cos(rad)).toFixed(1), y = (rm * Math.sin(rad)).toFixed(1);
+      const suf = mode === 'minor' ? 'm' : '';
+      let label = nmText(k.tonic) + suf;
+      if (altId) label += '/' + nmText(byId[altId].tonic) + suf;
+      const size = altId ? fs * (naming === 'solfej' ? 0.58 : 0.72) : fs;
+      s += `<g class="wedge${mode === 'minor' ? ' min' : ''}${sel ? ' sel' : ''}" data-key="${sel ? selected : id}" tabindex="0" role="button" aria-label="${keyNameText(k)}">
+        <path d="${wedgePath(r0, r1, c - 15, c + 15)}"/>
+        <text x="${x}" y="${(+y + (mode === 'major' ? -2 : 4)).toFixed(1)}" text-anchor="middle" font-size="${size}">${label}</text>
+        ${mode === 'major' ? `<text class="sig" x="${x}" y="${(+y + 15).toFixed(1)}" text-anchor="middle" font-size="11">${sigShort(k.sig)}</text>` : ''}
+      </g>`;
+    });
+  };
+  ring(CIRCLE_MAJ, CIRCLE_MAJ_ALT, 'major', 120, 182, naming === 'solfej' ? 15 : 19);
+  ring(CIRCLE_MIN, CIRCLE_MIN_ALT, 'minor', 70, 120, naming === 'solfej' ? 11 : 14);
+  s += `<circle class="circle-center" r="69"/><text class="circle-center-text" text-anchor="middle" y="-4">Beşliler</text><text class="circle-center-text" text-anchor="middle" y="12">çemberi</text></svg>`;
+  const box = document.getElementById('circle');
+  box.innerHTML = s;
+  box.querySelectorAll('.wedge').forEach(g => {
+    const go = () => select(g.dataset.key);
+    g.addEventListener('click', go);
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+
+function enharmonicOf(k) {
+  const p = pc(k.tonic);
+  return KEYS.find(o => o !== k && o.mode === k.mode && pc(o.tonic) === p);
+}
+
+function renderDetail() {
+  const k = byId[selected];
+  const isMin = k.mode === 'minor';
+  const iv = isMin ? IV[variant] : IV.major;
+  const notes = isMin ? build(k.tonic, iv) : k.notes;
+  const changed = isMin && variant !== 'minor' ? notes.map((n, i) => same(n, k.notes[i]) ? -1 : i).filter(i => i >= 0) : [];
+  const abs = absOf(k.tonic, iv);
+  const rel = byId[k.rel], par = k.par ? byId[k.par] : null, enh = enharmonicOf(k);
+  const relDeg = isMin ? '3. derecesi' : '6. derecesi';
+  const variantNotes = {
+    minor: 'Doğal minör, ilişkili majörüyle aynı notaları kullanır.',
+    harmonic: `Armonik minörde 7. derece yükselir (${nm(k.notes[6])} → ${nm(notes[6])}). 6 ile 7 arası 3 yarım ses olur; bu “doğulu” bir renk verir.`,
+    melodic: `Melodik minörde çıkarken 6. ve 7. dereceler yükselir (${nm(k.notes[5])} → ${nm(notes[5])}, ${nm(k.notes[6])} → ${nm(notes[6])}). İnerken doğal minöre döner.`,
+  };
+  const el = document.getElementById('detail');
+  el.className = 'panel' + (isMin ? ' mode-minor' : '');
+  el.innerHTML = `
+    <div class="detail-head">
+      <div>
+        <span class="chip ${isMin ? 'min' : 'maj'}">${isMin ? 'Minör gam' : 'Majör gam'}</span>
+        <h2 style="margin-top:6px">${keyName(k)}</h2>
+      </div>
+      <button type="button" class="btn primary" id="play-detail">▶ Dinle</button>
+    </div>
+    ${scaleRowHTML(notes, iv, { changed })}
+    ${pianoHTML(abs, notes)}
+    ${isMin ? `<div class="variants"><div class="seg" role="tablist" aria-label="Minör türü">
+        <button type="button" role="tab" id="var-minor" data-var="minor" aria-selected="${variant === 'minor'}">Doğal</button>
+        <button type="button" role="tab" id="var-harmonic" data-var="harmonic" aria-selected="${variant === 'harmonic'}">Armonik</button>
+        <button type="button" role="tab" id="var-melodic" data-var="melodic" aria-selected="${variant === 'melodic'}">Melodik</button>
+      </div></div><p class="variant-note">${variantNotes[variant]}</p>` : ''}
+    <div class="facts">
+      <div class="staff">${staffSVG(k.sig)}</div>
+      <dl class="fact-list">
+        <div><dt>Donanım</dt><dd>${sigText(k.sig)}${k.sig.count ? ': ' + k.sig.list.map(nm).join(', ') : ''}</dd></div>
+        <div><dt>İlişkili ${isMin ? 'majör' : 'minör'}</dt><dd><button type="button" class="linkish ${isMin ? 'maj' : 'min'}" data-go="${rel.id}">${keyName(rel)}</button> <span class="muted" style="font-weight:500">(bu gamın ${relDeg}, aynı donanım)</span></dd></div>
+        ${par ? `<div><dt>Paralel ${isMin ? 'majör' : 'minör'}</dt><dd><button type="button" class="linkish ${isMin ? 'maj' : 'min'}" data-go="${par.id}">${keyName(par)}</button> <span class="muted" style="font-weight:500">(aynı tonik)</span></dd></div>` : ''}
+        ${enh ? `<div><dt>Enharmonik eşi</dt><dd><button type="button" class="linkish ${isMin ? 'min' : 'maj'}" data-go="${enh.id}">${keyName(enh)}</button> <span class="muted" style="font-weight:500">(aynı sesler, farklı yazım)</span></dd></div>` : ''}
+      </dl>
+    </div>`;
+  const piano = el.querySelector('.piano');
+  el.querySelector('#play-detail').addEventListener('click', () => playScale(k.tonic, iv, piano, isMin && variant === 'melodic' ? IV.minor : null));
+  el.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => select(b.dataset.go)));
+  el.querySelectorAll('[data-var]').forEach(b => b.addEventListener('click', () => { variant = b.dataset.var; renderDetail(); }));
+}
+
+function renderTips() {
+  const s = n => nm(n);
+  const sharps = SHARP_ORDER.map(l => s({ l, a: 1 })).join(' ');
+  const flats = FLAT_ORDER.map(l => s({ l, a: -1 })).join(' ');
+  const tips = [
+    ['Diyezlerin sırası', `<span class="seq">${sharps}</span><br>Her yeni diyezli ton bir öncekinin 5. derecesinden başlar.`],
+    ['Bemollerin sırası', `<span class="seq">${flats}</span><br>Diyez sırasının tam tersidir.`],
+    ['Diyezli tonu bul', `Son diyezin yarım ses üstü tonun adıdır. ${s(parse('F#'))}, ${s(parse('C#'))} → son diyez ${s(parse('C#'))}, yarım ses üstü <b>${s(parse('D'))} majör</b>.`],
+    ['Bemollü tonu bul', `Sondan bir önceki bemol tonun adıdır. ${s(parse('Bb'))}, ${s(parse('Eb'))}, ${s(parse('Ab'))} → <b>${s(parse('Eb'))} majör</b>. Tek bemollü ${s(parse('F'))} majörü ezberle.`],
+    ['İlişkili minör', `Majörün 6. derecesi ya da tonikten 3 yarım ses aşağısı. ${s(parse('C'))} majör → ${s(parse('A'))} minör. İkisi aynı notaları ve donanımı paylaşır.`],
+    ['Her harf bir kez', `Gamda yedi harfin her biri tam bir kez geçer. Bu yüzden ${s(parse('F'))} majörde ${s(parse('A#'))} değil ${s(parse('Bb'))} yazılır.`],
+    ['Çemberde gezinme', `Saat yönünde her adım tam 5 sesli yukarı çıkar ve bir diyez ekler. Ters yönde her adım bir bemol ekler.`],
+    ['Majör mü minör mü?', `Kulağın için: 3. dereceye dikkat et. Tonikten 4 yarım ses yukarısı majör, 3 yarım ses yukarısı minör renk verir.`],
+  ];
+  document.getElementById('tips').innerHTML = tips.map(([t, p]) => `<div class="tip"><h3>${t}</h3><p>${p}</p></div>`).join('');
+}
+
+function renderTables() {
+  const tbl = (mode, title, cls) => {
+    const rows = KEYS.filter(k => k.mode === mode).sort(sortBySig).map(k => `
+      <tr data-key="${k.id}" class="${k.id === selected ? 'sel' : ''}">
+        <td class="key">${keyName(k)}</td>
+        <td>${sigShort(k.sig).replace(/[♯♭]/, m => `<span class="acc">${m}</span>`)}</td>
+        <td class="notes">${k.notes.map(nm).join('&ensp;')}</td>
+        <td>${keyName(byId[k.rel])}</td>
+      </tr>`).join('');
+    return `<div class="panel ${cls}"><h3 style="font-size:18px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span class="swatch ${mode === 'major' ? 'maj' : 'min'}"></span>${title}</h3>
+      <div class="table-wrap"><table><thead><tr><th>Ton</th><th>İşaret</th><th>Notalar</th><th>İlişkili</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  };
+  const box = document.getElementById('tables');
+  box.innerHTML = tbl('major', 'Majör gamlar', 't-maj') + tbl('minor', 'Doğal minör gamlar', 't-min');
+  box.querySelectorAll('tr[data-key]').forEach(tr => tr.addEventListener('click', () => {
+    select(tr.dataset.key);
+    document.getElementById('detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+}
+
+function select(id) {
+  if (!byId[id]) return;
+  selected = id; store.set('selected', id);
+  renderCircle(); renderDetail(); renderTables();
+}
+
+/* ---------- Egzersizler ---------- */
+const TYPES = [
+  ['mix', 'Karışık', 'Aşağıdakilerin hepsinden rastgele.'],
+  ['build', 'Gamı yaz', 'Gamın notalarını sırayla seç.'],
+  ['missing', 'Eksik nota', 'Gamdaki boşluğu doldur.'],
+  ['degree', 'Derece bul', 'Gamın kaçıncı notası hangisi?'],
+  ['signature', 'Donanım oku', 'Porteye bakıp gamı tanı.'],
+  ['count', 'İşaret say', 'Gamda kaç diyez ya da bemol var?'],
+  ['relative', 'İlişkili ton', 'İlişkili majör ya da minörü bul.'],
+  ['ear', 'Kulak', 'Duyduğun gam majör mü minör mü?'],
+];
+const settings = Object.assign({ type: 'mix', major: true, minor: true, maxAcc: 3 }, store.get('settings', {}));
+const session = { r: 0, w: 0, streak: 0, best: store.get('best', 0) };
+let stats = store.get('stats', {});
+let cur = null;
+
+const rand = n => Math.floor(Math.random() * n);
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+function pool() {
+  return KEYS.filter(k => settings[k.mode] && k.sig.count <= settings.maxAcc);
+}
+function pickKey(p = pool()) {
+  // Zorlanılan tonlar daha ağır basar; az önce sorulan ton tekrar gelmesin
+  const ws = p.map(k => {
+    const s = stats[k.id] || { r: 0, w: 0 };
+    let w = 1 + s.w * 1.5 - Math.min(s.r, 10) * 0.08;
+    if (cur && cur.key === k) w *= 0.15;
+    return Math.max(0.25, w);
+  });
+  let t = Math.random() * ws.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < p.length; i++) { t -= ws[i]; if (t <= 0) return p[i]; }
+  return p[p.length - 1];
+}
+
+function distractNotes(n) {
+  const out = [];
+  const add = x => { if (x.a >= -1 && x.a <= 1 && !same(x, n) && !out.some(o => same(o, x))) out.push(x); };
+  // aynı harf, farklı işaret
+  add({ l: n.l, a: n.a + 1 }); add({ l: n.l, a: n.a - 1 });
+  // enharmonik yazım (komşu harf)
+  [-1, 1].forEach(dl => {
+    const l = (n.l + dl + 7) % 7;
+    let a = (pc(n) - NAT[l]) % 12; a = ((a + 18) % 12) - 6;
+    add({ l, a });
+  });
+  // komşu harfler
+  add({ l: (n.l + 1) % 7, a: n.a }); add({ l: (n.l + 6) % 7, a: n.a });
+  const firsts = out.slice(0, 2), rest = shuffle(out.slice(2));
+  return shuffle(firsts.concat(rest)).slice(0, 3);
+}
+
+function genMC(kind) {
+  const key = pickKey();
+  if (!key) return null;
+  const hl = k => `<span class="${k.mode === 'major' ? 'hl-maj' : 'hl-min'}">${keyName(k)}</span>`;
+  const iv = IV[key.mode];
+  if (kind === 'missing') {
+    const idx = 1 + rand(6);
+    const ans = key.notes[idx];
+    return {
+      kind, key, label: 'Eksik nota',
+      prompt: `${hl(key)} gamında boşluğa hangi nota gelir?`,
+      body: scaleRowHTML(key.notes, iv, { blank: idx }),
+      options: shuffle([{ html: nm(ans), ok: true }].concat(distractNotes(ans).map(n => ({ html: nm(n) })))),
+      explain: scaleRowHTML(key.notes, iv),
+    };
+  }
+  if (kind === 'degree') {
+    const idx = 1 + rand(6);
+    const ans = key.notes[idx];
+    return {
+      kind, key, label: 'Derece bul',
+      prompt: `${hl(key)} gamının <u>${idx + 1}.</u> derecesi hangi nota?`,
+      body: '',
+      options: shuffle([{ html: nm(ans), ok: true }].concat(distractNotes(ans).map(n => ({ html: nm(n) })))),
+      explain: scaleRowHTML(key.notes, iv),
+    };
+  }
+  if (kind === 'signature') {
+    const inPool = pool().filter(k => k.mode === key.mode && k !== key && !(k.sig.type === key.sig.type && k.sig.count === key.sig.count));
+    const others = KEYS.filter(k => k.mode === key.mode && k !== key && !(k.sig.type === key.sig.type && k.sig.count === key.sig.count));
+    const src = inPool.length >= 3 ? inPool : others;
+    const near = src.slice().sort((a, b) => Math.abs(a.sig.count - key.sig.count) - Math.abs(b.sig.count - key.sig.count) + (Math.random() - .5));
+    const picks = shuffle(near.slice(0, 5)).slice(0, 3);
+    return {
+      kind, key, label: 'Donanım oku',
+      prompt: `Bu donanım hangi <span class="${key.mode === 'major' ? 'hl-maj' : 'hl-min'}">${modeTr(key.mode)}</span> gama ait?`,
+      body: `<div class="staff" style="display:inline-block">${staffSVG(key.sig)}</div>`,
+      options: shuffle([{ html: keyName(key), ok: true }].concat(picks.map(k => ({ html: keyName(k) })))),
+      explain: `<div>${sigText(key.sig)}${key.sig.count ? ': ' + key.sig.list.map(nm).join(', ') : ''}. İlişkili ${key.mode === 'major' ? 'minörü' : 'majörü'} ${keyName(byId[key.rel])}.</div>`,
+    };
+  }
+  if (kind === 'count') {
+    const sig = key.sig;
+    const fmt = (c, t) => c === 0 ? 'İşaret yok' : `${c} <span class="acc">${t === 'sharp' ? '♯' : '♭'}</span>`;
+    const opts = [{ c: sig.count, t: sig.type }];
+    const cand = [];
+    for (let c = 0; c <= 7; c++) ['sharp', 'flat'].forEach(t => { if (!(c === 0 && t === 'flat')) cand.push({ c, t: c === 0 ? 'none' : t }); });
+    const valid = cand.filter(o => !(o.c === sig.count && (o.t === sig.type)));
+    valid.sort((a, b) => (Math.abs(a.c - sig.count) + (a.t === sig.type ? 0 : 1.5)) - (Math.abs(b.c - sig.count) + (b.t === sig.type ? 0 : 1.5)) + (Math.random() - .5) * 1.2);
+    valid.slice(0, 3).forEach(o => opts.push(o));
+    return {
+      kind, key, label: 'İşaret say',
+      prompt: `${hl(key)} gamında kaç işaret var?`,
+      body: '',
+      options: shuffle(opts.map((o, i) => ({ html: fmt(o.c, o.t), ok: i === 0 }))),
+      explain: `<div>${sigText(sig)}${sig.count ? ': ' + sig.list.map(nm).join(', ') : ''}</div>${scaleRowHTML(key.notes, iv, { steps: false })}`,
+    };
+  }
+  if (kind === 'relative') {
+    const rel = byId[key.rel];
+    const opts = [{ html: keyName(rel), ok: true }];
+    const used = [rel];
+    if (key.par) { opts.push({ html: keyName(byId[key.par]) }); used.push(byId[key.par]); }
+    const others = shuffle(KEYS.filter(k => k.mode === rel.mode && !used.includes(k) && Math.abs(k.sig.count - rel.sig.count) <= 3 && pc(k.tonic) !== pc(rel.tonic)));
+    others.slice(0, 4 - opts.length).forEach(k => opts.push({ html: keyName(k) }));
+    return {
+      kind, key, label: 'İlişkili ton',
+      prompt: `${hl(key)} gamının ilişkili ${key.mode === 'major' ? 'minörü' : 'majörü'} hangisi?`,
+      body: '',
+      options: shuffle(opts),
+      explain: `<div>${key.mode === 'major' ? `Majörün 6. derecesi: <b>${nm(key.notes[5])}</b>` : `Minörün 3. derecesi: <b>${nm(key.notes[2])}</b>`}. İkisi de ${sigText(key.sig).toLowerCase()} kullanır.</div>`,
+    };
+  }
+  if (kind === 'ear') {
+    return {
+      kind, key, label: 'Kulak',
+      prompt: 'Bu gam majör mü, minör mü?',
+      body: `<button type="button" class="btn" id="ear-play">▶ Tekrar dinle</button>`,
+      options: [{ html: '<span class="swatch maj"></span> Majör', ok: key.mode === 'major' }, { html: '<span class="swatch min"></span> Minör', ok: key.mode === 'minor' }],
+      explain: `<div>Çalınan: <b>${keyName(key)}</b>. 3. dereceye kulak ver: ${nm(key.notes[0])} → ${nm(key.notes[2])}.</div>${pianoHTML(absOf(key.tonic, iv), key.notes)}`,
+      onShow: () => playScale(key.tonic, iv, null),
+      noStats: true,
+    };
+  }
+}
+
+function record(ok, q) {
+  if (ok) { session.r++; session.streak++; session.best = Math.max(session.best, session.streak); store.set('best', session.best); }
+  else { session.w++; session.streak = 0; }
+  if (q.key && !q.noStats) {
+    const s = stats[q.key.id] || (stats[q.key.id] = { r: 0, w: 0 });
+    ok ? s.r++ : s.w++;
+    store.set('stats', stats);
+  }
+  renderScore();
+}
+function renderScore() {
+  document.getElementById('sc-right').textContent = session.r;
+  document.getElementById('sc-wrong').textContent = session.w;
+  document.getElementById('sc-streak').textContent = session.streak;
+  document.getElementById('sc-best').textContent = session.best;
+}
+
+function nextQuestion() {
+  const stage = document.getElementById('stage');
+  const p = pool();
+  if (!p.length) {
+    cur = null;
+    stage.innerHTML = `<p class="q-prompt">Soru havuzu boş.</p><p class="muted">Soldan en az bir gam türü (majör ya da minör) seç.</p>`;
+    return;
+  }
+  let kind = settings.type;
+  if (kind === 'mix') kind = ['build', 'missing', 'missing', 'degree', 'signature', 'count', 'relative', 'ear'][rand(8)];
+  if (kind === 'build') return showBuild();
+  const q = genMC(kind);
+  cur = q; q.answered = false;
+  stage.innerHTML = `
+    <div class="label q-kind">${q.label}</div>
+    <p class="q-prompt">${q.prompt}</p>
+    ${q.body}
+    <div class="options">${q.options.map((o, i) => `<button type="button" class="opt" id="opt-${i}" data-i="${i}"><span class="kbd">${i + 1}</span><span>${o.html}</span></button>`).join('')}</div>
+    <div id="fb"></div>`;
+  stage.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => answerMC(+b.dataset.i)));
+  const ep = stage.querySelector('#ear-play');
+  if (ep) ep.addEventListener('click', () => playScale(q.key.tonic, IV[q.key.mode], null));
+  if (q.onShow) q.onShow();
+}
+
+function answerMC(i) {
+  const q = cur;
+  if (!q || q.answered || q.build) return;
+  q.answered = true;
+  const ok = !!q.options[i].ok;
+  const stage = document.getElementById('stage');
+  stage.querySelectorAll('.opt').forEach((b, j) => {
+    b.disabled = true;
+    if (q.options[j].ok) b.classList.add('right');
+    else if (j === i) b.classList.add('wrong');
+  });
+  record(ok, q);
+  feedback(ok, q.explain, q.key);
+}
+
+function feedback(ok, explain, key, title) {
+  const fb = document.getElementById('fb');
+  const ivK = IV[key.mode];
+  fb.innerHTML = `<div class="feedback ${ok ? 'ok' : 'no'}${key.mode === 'minor' ? ' mode-minor' : ''}">
+    <div class="fb-title">${title || (ok ? 'Doğru!' : 'Olmadı.')}</div>
+    ${explain || ''}
+    <div class="fb-actions">
+      <button type="button" class="btn primary" id="next-q">Sonraki soru <span class="muted mono" style="font-size:11px;color:inherit;opacity:.7">Enter</span></button>
+      <button type="button" class="btn" id="fb-play">▶ ${keyName(key)} dinle</button>
+      <button type="button" class="btn" id="fb-sheet">Kopya kâğıdında aç</button>
+    </div></div>`;
+  fb.querySelector('#next-q').addEventListener('click', nextQuestion);
+  fb.querySelector('#fb-play').addEventListener('click', () => playScale(key.tonic, ivK, fb.querySelector('.piano')));
+  fb.querySelector('#fb-sheet').addEventListener('click', () => { select(key.id); variant = 'minor'; switchTab('sheet'); document.getElementById('detail').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  fb.querySelector('#next-q').focus({ preventScroll: true });
+}
+
+/* Gamı yaz */
+function showBuild(forced) {
+  const key = forced || pickKey();
+  const iv = IV[key.mode];
+  cur = { build: true, key, pos: 1, mistakes: 0, revealed: false, answered: false };
+  const stage = document.getElementById('stage');
+  const hlc = key.mode === 'major' ? 'hl-maj' : 'hl-min';
+  let pal = '';
+  [[-1, 'Bemollü'], [0, 'Doğal'], [1, 'Diyezli']].forEach(([a, lab]) => {
+    pal += `<div class="palette-label">${lab}</div>`;
+    for (let l = 0; l < 7; l++) pal += `<button type="button" class="note-btn" id="nb-${l}-${a}" data-l="${l}" data-a="${a}">${nm({ l, a })}</button>`;
+  });
+  stage.innerHTML = `
+    <div class="label q-kind">Gamı yaz</div>
+    <p class="q-prompt"><span class="${hlc}">${keyName(key)}</span> gamını yaz.</p>
+    <div class="slots" id="slots"></div>
+    <div class="palette" id="palette">${pal}</div>
+    <div class="hint-line" id="hint"></div>
+    <div class="fb-actions" style="margin-top:10px">
+      <button type="button" class="btn small" id="b-hint">İpucu</button>
+      <button type="button" class="btn small" id="b-reveal">Cevabı göster</button>
+    </div>
+    <div id="fb"></div>`;
+  renderSlots();
+  stage.querySelectorAll('.note-btn').forEach(b => b.addEventListener('click', () => buildPick({ l: +b.dataset.l, a: +b.dataset.a })));
+  stage.querySelector('#b-hint').addEventListener('click', () => {
+    const c = cur; if (!c || c.answered) return;
+    const d = iv[c.pos] - iv[c.pos - 1];
+    const prev = key.notes[c.pos - 1];
+    document.getElementById('hint').innerHTML = `${nm(prev)} notasından <b>${d === 1 ? 'yarım ses (Y)' : 'tam ses (T)'}</b> yukarı çık. Harf <b>${base({ l: (key.tonic.l + c.pos) % 7 })}</b> olmalı.`;
+  });
+  stage.querySelector('#b-reveal').addEventListener('click', () => {
+    const c = cur; if (!c || c.answered) return;
+    c.revealed = true; c.pos = 7; renderSlots(); finishBuild();
+  });
+}
+function renderSlots() {
+  const c = cur, key = c.key;
+  const box = document.getElementById('slots');
+  box.innerHTML = key.notes.map((n, i) => {
+    const cls = i === 0 ? 'given' : i < c.pos ? 'filled' : i === c.pos ? 'current' : '';
+    return `<div class="slot ${cls}" id="slot-${i}"><span class="d">${i + 1}</span>${i < c.pos || i === 0 ? nm(n) : ''}</div>`;
+  }).join('');
+}
+function buildPick(n) {
+  const c = cur;
+  if (!c || !c.build || c.answered) return;
+  const want = c.key.notes[c.pos];
+  const hint = document.getElementById('hint');
+  if (same(n, want)) {
+    const cx = ac(); if (cx) tone(cx, 60 + absOf(c.key.tonic, IV[c.key.mode])[c.pos], cx.currentTime + 0.01, 0.5);
+    c.pos++;
+    hint.textContent = '';
+    renderSlots();
+    if (c.pos >= 7) finishBuild();
+    return;
+  }
+  c.mistakes++;
+  const slot = document.getElementById('slot-' + c.pos);
+  slot.classList.remove('shake'); void slot.offsetWidth; slot.classList.add('shake');
+  if (pc(n) === pc(want)) hint.innerHTML = `Ses doğru ama yazım yanlış: bu derecede harf <b>${base(want)}</b> olmalı. Her harf gamda bir kez geçer.`;
+  else if (n.l === want.l) hint.innerHTML = `Harf doğru, işareti tekrar düşün.`;
+  else hint.innerHTML = `Bu derecede harf <b>${base(want)}</b> olmalı.`;
+}
+function finishBuild() {
+  const c = cur; c.answered = true;
+  document.querySelectorAll('.note-btn, #b-hint, #b-reveal').forEach(b => b.disabled = true);
+  const ok = !c.revealed && c.mistakes === 0;
+  record(ok, c);
+  const iv = IV[c.key.mode];
+  const title = c.revealed ? 'Cevap bu.' : ok ? 'Kusursuz!' : `Tamamlandı, ${c.mistakes} hatayla.`;
+  feedback(ok, scaleRowHTML(c.key.notes, iv) + pianoHTML(absOf(c.key.tonic, iv), c.key.notes), c.key, title);
+  if (!c.revealed) playScale(c.key.tonic, iv, document.querySelector('#fb .piano'));
+}
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('view-ex').hidden || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target.matches('input, textarea')) return;
+  if (cur && !cur.build && !cur.answered && /^[1-4]$/.test(e.key)) {
+    const i = +e.key - 1;
+    if (cur.options[i]) { e.preventDefault(); answerMC(i); }
+  } else if (e.key === 'Enter' && cur && cur.answered && !e.target.closest('button')) {
+    e.preventDefault(); nextQuestion();
+  }
+});
+
+function renderTypes() {
+  const box = document.getElementById('types');
+  box.innerHTML = TYPES.map(([id, t, d]) => `<button type="button" class="type" id="type-${id}" data-type="${id}" aria-pressed="${settings.type === id}"><b>${t}</b><span>${d}</span></button>`).join('');
+  box.querySelectorAll('.type').forEach(b => b.addEventListener('click', () => {
+    settings.type = b.dataset.type; saveSettings(); renderTypes(); nextQuestion();
+  }));
+}
+function saveSettings() { store.set('settings', settings); }
+function renderPoolInfo() {
+  document.getElementById('max-acc-out').textContent = settings.maxAcc;
+  const n = pool().length;
+  document.getElementById('pool-info').textContent = n ? `Havuzda ${n} gam var.` : 'Havuz boş.';
+}
+function initSettings() {
+  const mj = document.getElementById('set-major'), mn = document.getElementById('set-minor'), rg = document.getElementById('set-maxacc');
+  mj.checked = settings.major; mn.checked = settings.minor; rg.value = settings.maxAcc;
+  mj.addEventListener('change', () => { settings.major = mj.checked; saveSettings(); renderPoolInfo(); nextQuestion(); });
+  mn.addEventListener('change', () => { settings.minor = mn.checked; saveSettings(); renderPoolInfo(); nextQuestion(); });
+  rg.addEventListener('input', () => { settings.maxAcc = +rg.value; saveSettings(); renderPoolInfo(); });
+  rg.addEventListener('change', () => nextQuestion());
+  renderPoolInfo();
+}
+
+/* ---------- İlerleme ---------- */
+function renderProgress() {
+  ['major', 'minor'].forEach(mode => {
+    document.getElementById('m-' + mode).innerHTML = KEYS.filter(k => k.mode === mode).sort(sortBySig).map(k => {
+      const s = stats[k.id] || { r: 0, w: 0 }, t = s.r + s.w;
+      const pct = t ? Math.round(100 * s.r / t) : null;
+      const lv = pct == null ? '' : pct < 60 ? 'lv1' : pct < 85 ? 'lv2' : 'lv3';
+      return `<div class="m-cell ${lv}"><b>${keyName(k)}</b><span>${t ? `%${pct} · ${s.r}/${t}` : '—'}</span></div>`;
+    }).join('');
+  });
+  const ra = document.getElementById('reset-area');
+  ra.innerHTML = `<button type="button" class="btn small" id="reset-ask">İstatistikleri sıfırla</button>`;
+  ra.querySelector('#reset-ask').addEventListener('click', () => {
+    ra.innerHTML = `<span class="muted" style="font-size:13px;margin-right:8px">Tüm kayıtlar silinsin mi?</span><button type="button" class="btn small" id="reset-yes">Evet, sıfırla</button> <button type="button" class="btn small" id="reset-no">Vazgeç</button>`;
+    ra.querySelector('#reset-yes').addEventListener('click', () => { stats = {}; store.set('stats', stats); session.best = 0; store.set('best', 0); renderScore(); renderProgress(); });
+    ra.querySelector('#reset-no').addEventListener('click', renderProgress);
+  });
+}
+
+/* ---------- Sekmeler ve adlandırma ---------- */
+function switchTab(t) {
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  document.getElementById('view-sheet').hidden = t !== 'sheet';
+  document.getElementById('view-ex').hidden = t !== 'ex';
+  document.getElementById('view-prog').hidden = t !== 'prog';
+  if (t === 'prog') renderProgress();
+  if (t === 'ex' && !cur) nextQuestion();
+  store.set('tab', t);
+}
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+
+function setNaming(n) {
+  naming = n; store.set('naming', n);
+  document.querySelectorAll('[data-naming]').forEach(b => b.setAttribute('aria-pressed', b.dataset.naming === n));
+  renderFormulas(); renderTips(); renderCircle(); renderDetail(); renderTables(); renderProgress(); renderPoolInfo();
+  if (cur) {
+    // Açık soruyu yeni adlarla yeniden kur
+    if (cur.build && !cur.answered) { const keep = cur; showBuild(keep.key); cur.pos = keep.pos; cur.mistakes = keep.mistakes; renderSlots(); }
+    else nextQuestion();
+  }
+}
+document.querySelectorAll('[data-naming]').forEach(b => b.addEventListener('click', () => setNaming(b.dataset.naming)));
+
+/* ---------- Başlat ---------- */
+document.querySelectorAll('[data-naming]').forEach(b => b.setAttribute('aria-pressed', b.dataset.naming === naming));
+renderFormulas(); renderTips(); renderCircle(); renderDetail(); renderTables();
+renderTypes(); initSettings(); renderScore();
+const startTab = location.hash === '#egzersiz' ? 'ex' : location.hash === '#ilerleme' ? 'prog' : store.get('tab', 'sheet');
+switchTab(['sheet', 'ex', 'prog'].includes(startTab) ? startTab : 'sheet');
+})();
+</script>
+</body>
+</html>
